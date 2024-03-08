@@ -1,0 +1,2 @@
+pandas==2.2.1
+ShopifyAPI==12.4.0
