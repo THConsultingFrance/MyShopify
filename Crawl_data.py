@@ -70,7 +70,7 @@ for inv in orders:
         info_dict[name]['Order Number'] = inv.order_number
         # Order - Product, Price, Name, Quantity, Order_Date, Tags
         if hasattr(inv, 'tags'):
-            info_dict[name]['Tags'] = inv.tag
+            info_dict[name]['Tags'] = inv.tags
         info_dict[name]['Order Date'] = ord_time.strftime('%m/%d/%Y')
         info_dict[name]['Product'] = []
 
