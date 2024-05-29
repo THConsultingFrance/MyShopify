@@ -6,11 +6,11 @@ import shopify
 from src.new_product_creator import ShopifyProduct
 
 # Input and output
-input_file_name = 'data/test_product_generator_v3.csv'
+input_file_name = r'D:\\Study\\THConsultant\\test.csv'
 out_file_name = input_file_name.replace('.csv', '_report.csv')
 
 # Read secrets
-with open('config/secret.json', 'r') as jfile:
+with open(r'D:\\Study\\THConsultant\\secret.json', 'r') as jfile:
     secrets = json.load(jfile)
 shop_name = secrets['shop_name']
 token = secrets['token']
