@@ -56,7 +56,6 @@ def fetch_all_orders():
 # Fetch all orders
 orders = fetch_all_orders()
 
-
 # Crawling data
 info_dict = {}
 for inv in orders:
@@ -68,33 +67,41 @@ for inv in orders:
     if name not in info_dict:
         info_dict[name] = {}
         info_dict[name]['Order Number'] = inv.order_number
-        # Order - Product, Price, Name, Quantity, Order_Date, Tags
+        # Order - Product, Price, Name, Quantity, Order_Date, Tags, Fulfillments
+
         if hasattr(inv, 'tags'):
             info_dict[name]['Tags'] = inv.tags
+        if hasattr(inv, 'fulfillment_status'):
+            info_dict[name]['Fulfillments_status'] = inv.fulfillment_status
+            if not inv.fulfillment_status:
+                info_dict[name]['Fulfillments_status'] = 'unfulfilled'
         info_dict[name]['Order Date'] = ord_time.strftime('%m/%d/%Y')
         info_dict[name]['Product'] = []
-
+        quant = 0
         for prod in inv.line_items:
-            info_dict[name]['Product'].append([prod.name, prod.quantity])
-
+            info_dict[name]['Product'].append([prod.name, prod.quantity, prod.price])
+            quant += prod.quantity
+        
         # Client: Name, Email, Phone, Address
         info_dict[name]['Client name'] = client_name
         if hasattr(inv.customer, 'phone') and inv.customer:
             info_dict[name]['Phone Number'] = inv.customer.phone
         elif hasattr(inv.customer, 'default_address') and inv.customer.default_address:
             info_dict[name]['Phone Number'] = inv.customer.default_address.phone
-
+        if hasattr(inv.customer, 'id') and inv.customer.id:
+            info_dict[name]['ID'] = inv.customer.id
         info_dict[name]['Email'] = inv.customer.email
 
         if hasattr(inv.customer, 'default_address') and inv.customer.default_address:
             temp = inv.customer.default_address
             info_dict[name]['Add'] = f'{temp.address1}, {temp.address2}, {temp.city}, {temp.province}'
-        # Process - Due_date, Person
+        # Revenue
+        info_dict[name]['Quantity'] = quant
+        info_dict[name]['Revenue'] = inv.current_total_price
+        info_dict[name]['Currency'] = inv.currency
     else: 
         continue
 
 data = pd.DataFrame(info_dict)
+data = data.T
 data.to_csv('Data.csv')
-
-print(data.iloc[:,:4])
-print(data.shape)
